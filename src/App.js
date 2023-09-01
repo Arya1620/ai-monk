@@ -1,23 +1,46 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import TagView from './TagView';
+import ExportButton from './ExportButton';
+
+const initialTree = {
+  name: 'root',
+  children: [
+    {
+      name: 'child1',
+      children: [
+        { name: 'child1-child1', data: 'c1-c1 Hello' },
+        { name: 'child1-child2', data: 'c1-c2 JS' },
+      ],
+    },
+    { name: 'child2', data: 'c2 World' },
+  ],
+};
 
 function App() {
+  const [tree, setTree] = useState(initialTree);
+
+  const handleUpdate = (tagName, newData) => {
+    const updatedTree = { ...tree };
+    updateTagData(updatedTree, tagName, newData);
+    setTree(updatedTree);
+  };
+
+  const updateTagData = (node, tagName, newData) => {
+    if (node.name === tagName) {
+      node.data = newData;
+    } else if (node.children) {
+      for (let i = 0; i < node.children.length; i++) {
+        updateTagData(node.children[i], tagName, newData);
+      }
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Nested Tags Tree</h1>
+      <TagView tag={tree} onUpdate={handleUpdate} />
+      <ExportButton data={tree} />
     </div>
   );
 }
